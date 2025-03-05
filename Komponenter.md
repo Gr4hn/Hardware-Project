@@ -3,16 +3,16 @@
 - Kopplingsplatta
 - Jumperkablar
 
-# Ljuset
+## Ljuset
 - Dagsljus-LED
 - Transistor för styrning
 - Batteriklämma 9V
 - Strömkälla kopplingsplatta
 
-# Sensor
+## Sensor
 - Dagsljussensor (fototransistor)
 
-# Klocka
+## Klocka
 - Klockmodul (real time clock)
 - Knappar för att sätta klockan/larmet
 - Segmentdisplay HH:MM
