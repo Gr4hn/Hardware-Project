@@ -3,12 +3,7 @@
 ## Projektpitch
 Projektet genomförs i 8 team med 4 - 5 personer i varje.
 
-Det är viktigt att alla teammedlemmar är delaktiga i alla moment.
-Teamet:
-
-- Föreslår ett problem ni vill lösa med hjälp av hårdvaran och tillhörande
-programmering
-	- Sensorstyrd lampa/klockradio, anpassar ljusstyrka efter antingen ljus i rummet eller soluppgång. 
+- Sensorstyrd lampa/klockradio, anpassar ljusstyrka efter antingen ljus i rummet eller soluppgång. 
 	- Sätta larmtid med knappar (H:M?)
 	- Indikator som visar att larmet är aktivt
 	- Segmentdisplay för att visa klockslag
