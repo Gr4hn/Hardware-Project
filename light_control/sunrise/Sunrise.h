@@ -1,9 +1,12 @@
+#ifndef CHAS_SUNRISE
+#define CHAS_SUNRISE
+
 #include <RTClib.h>
 
 
 namespace LED_control 
 {
-  
+
 
   float ratio_from_analog ( int analog_input )
   {
@@ -45,14 +48,12 @@ namespace LED_control
 
 }
 
+struct Alarm_Target {
 
-struct Alarm_State 
-{
-  bool active;
   uint8_t hour; // 0-23
   uint8_t minute; // 0-59
 
-  const TimeSpan time_until_alarm ( const DateTime now )
+  const TimeSpan time_until_next ( const DateTime now ) const
   {
     bool tomorrow {false};
 
@@ -70,7 +71,33 @@ struct Alarm_State
     return target - now;
   }
 
+  const DateTime next ( const DateTime now ) const
+  {
+    bool tomorrow {false};
 
+    if ( hour < now.hour() )
+    {
+      tomorrow = true;
+    }
+    else if ( hour == now.hour() && minute <= now.minute() )
+    {
+      tomorrow = true;
+    }
+
+    DateTime target { now.year(), now.month(), now.day() + tomorrow, hour, minute };
+
+    return target;
+
+  }
+
+};
+
+
+struct Alarm_State 
+{
+  bool active;
+  Alarm_Target set_time;
+  DateTime alarm_time;
 };
 
 
@@ -113,14 +140,32 @@ struct Sunrise
 
   void operator() ( Alarm_State alarm, DateTime now )
   {
-    time_until_alarm = alarm.time_until_alarm( now );
-    if ( alarm.active && 
-          time_until_alarm.totalseconds() < fade_in_duration.totalseconds() )
+    if ( alarm.active && now <= alarm.alarm_time + alarm_duration() ) // alarm is on and we are not past playback
+     {
+      if ( now > alarm.alarm_time - fade_in_duration ) // we are in a time span when the light should be on
+      {
+        if ( now < alarm.alarm_time ) // the set alarm time hasn't happened yet, we are fading in
+        {
+          brightness_ratio = 
+          1.0 - 
+            float((alarm.alarm_time - now).totalseconds()) / 
+            float(fade_in_duration.totalseconds());
+          warmth_ratio = brightness_ratio;
+        }
+        else if ( now < alarm.alarm_time + steady_duration ) // we haven't passed the active light time
+        {
+          brightness_ratio = 1.0;
+          warmth_ratio = 1.0;
+        }
+      }
+     }
+    else //we should fade out towards 0.0 brightness;
     {
-      brightness_ratio = 1.0 - ( time_until_alarm.totalseconds() / fade_in_duration.totalseconds() );
+      brightness_ratio = 0.0;
     }
-    else if ( alarm.active &&  )
-    {}
 
   }
 };
+
+
+#endif
