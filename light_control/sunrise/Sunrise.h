@@ -164,6 +164,7 @@ struct Sunrise
       brightness_ratio = 0.0;
     }
 
+    set_brightness();
   }
 };
 
