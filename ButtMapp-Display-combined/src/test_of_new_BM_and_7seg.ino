@@ -5,14 +5,16 @@
 // Pin definitions
 const int CLK = 2;                // TM1637 Clock pin
 const int DIO = 3;                // TM1637 Data pin
-const int HOUR_BUTTON = 4;
-const int MINUTE_BUTTON = 5;
+const int HOURPLUS_BUTTON = 4;
+const int MINUTEPLUS_BUTTON = 5;
 const int ALARM_BUTTON = 6;
 const int SNOOZE_BUTTON = 7;
 const int BUZZER_PIN = 8;         // Add a buzzer pin
 const int RST_PIN = 9;            // Add a reset pin
 const int DAT_PIN = 10;           // Add a data pin
 const int CLK_PIN = 11;           // Add a clock pin
+const int MINUTEMINUS_BUTTON = 13;
+const int HOURMINUS_BUTTON = 12;
 
 // Display modes
 const int MODE_NORMAL = 0;
@@ -39,8 +41,10 @@ struct ButtonState {
   unsigned long lastDebounceTime;
 };
 
-ButtonState hourButton = {HIGH, HIGH, 0, 0};
-ButtonState minuteButton = {HIGH, HIGH, 0, 0};
+ButtonState hourPlusButton = {HIGH, HIGH, 0, 0};
+ButtonState minutePlusButton = {HIGH, HIGH, 0, 0};
+ButtonState hourMinusButton = {HIGH, HIGH, 0, 0};
+ButtonState minuteMinusButton = {HIGH, HIGH, 0, 0};
 ButtonState alarmButton = {HIGH, HIGH, 0, 0};
 ButtonState snoozeButton = {HIGH, HIGH, 0, 0};
 
@@ -64,8 +68,6 @@ unsigned long lastTimeUpdate = 0;
 // Function declarations
 void initializeHardware();
 void initializeRTC();
-bool checkShortButtonPress(int pin, ButtonState *button);
-bool checkButtonLongPress(int pin, ButtonState *button);
 void handleButtonEvents();
 void updateDisplay();
 void updateAlarmStatus();
@@ -75,23 +77,15 @@ void handleSetAlarmMode();
 void turnOffAlarm();
 void snoozeAlarm();
 void showAlarmTime();
-void setCurrentTime();
 void checkAlarm();
 void waitForRelease(int pin, ButtonState *button);
 void incrementHour();
+void decrementHour();
 void incrementMinute();
+void decrementMinute();
 void toggleAlarm();
-void firstTimeSetup();
-void setCurrentTime(int hour, int minute, int second);
 void updateCurrentTimeFromRTC();
 void waitForRelease(int pin, ButtonState *button);
-
-uint8_t parseDigits(char* str, uint8_t count)
-{
-    uint8_t val = 0;
-    while(count-- > 0) val = (val * 10) + (*str++ - '0');
-    return val;
-}
 
 void setup() {
   Serial.begin(9600);
@@ -175,8 +169,10 @@ void updateCurrentTimeFromRTC() {
 }
 
 void initializeHardware() {
-  pinMode(HOUR_BUTTON, INPUT_PULLUP);
-  pinMode(MINUTE_BUTTON, INPUT_PULLUP);
+  pinMode(HOURPLUS_BUTTON, INPUT_PULLUP);
+  pinMode(MINUTEPLUS_BUTTON, INPUT_PULLUP);
+  pinMode(HOURMINUS_BUTTON, INPUT_PULLUP);
+  pinMode(MINUTEMINUS_BUTTON, INPUT_PULLUP);
   pinMode(ALARM_BUTTON, INPUT_PULLUP);
   pinMode(SNOOZE_BUTTON, INPUT_PULLUP);
   pinMode(BUZZER_PIN, OUTPUT);
@@ -185,69 +181,6 @@ void initializeHardware() {
 }
 
 
-bool checkShortButtonPress(int pin, ButtonState *button) {
-  bool reading = digitalRead(pin);
-  bool result = false;
-  unsigned long currentTime = millis();
-
-  // Check if reading has changed
-  if (reading != button->lastState) {
-    button->lastDebounceTime = currentTime;
-  }
-  
-  // Check if state has been stable
-  if ((currentTime - button->lastDebounceTime) > DEBOUNCE_DELAY) {
-    
-    // If state has changed
-    if (reading != button->currentState) {
-      button->currentState = reading;
-      
-      // Record press time on button press
-      if (button->currentState == LOW) {
-        button->pressTime = currentTime;
-      } else {
-        // On button release, check if it was a short press
-        if ((currentTime - button->pressTime) < LONG_PRESS_TIME) {
-          result = true;
-        }
-      }
-    }
-  }
-
-  button->lastState = reading;
-  return result;
-}
-//-----------------
-bool checkButtonLongPress(int pin, ButtonState *button) {
-  bool reading = digitalRead(pin);
-  bool result = false;
-  unsigned long currentTime = millis();
-
-  // Check if reading has changed
-  if (reading != button->lastState) {
-    button->lastDebounceTime = currentTime;
-  }
-
-  // Check if state has been stable
-  if ((currentTime - button->lastDebounceTime) > DEBOUNCE_DELAY) {
-    // If state has changed
-    if (reading != button->currentState) {
-      button->currentState = reading;
-      // Record press time on button press
-      if (button->currentState == LOW) { // Button pressed
-        button->pressTime = currentTime;
-      } else { // Button released
-        // Check if it was a long press
-        if ((currentTime - button->pressTime) >= LONG_PRESS_TIME) {
-          result = true;
-        }
-      }
-    }
-  }
-
-  button->lastState = reading;
-  return result;
-}
 //-----------------
 
 
@@ -301,19 +234,35 @@ int checkButtonPress(int pin, ButtonState *button) {
 
 void handleButtonEvents() {
   // Hour button
-  int hourPress = checkButtonPress(HOUR_BUTTON, &hourButton);
-  if (hourPress == 1) {  // Short press
+  int hourPlusPress = checkButtonPress(HOURPLUS_BUTTON, &hourPlusButton);
+  if (hourPlusPress == 1) {  // Short press
     if (display_mode == MODE_SET_CLOCK || display_mode == MODE_SET_ALARM) {
       incrementHour();
       display_needs_update = true;
     }
   }
+
+  int hourMinusPress = checkButtonPress(HOURMINUS_BUTTON, &hourMinusButton);
+  if (hourMinusPress == 1) {  // Short press
+    if (display_mode == MODE_SET_CLOCK || display_mode == MODE_SET_ALARM) {
+      decrementHour();
+      display_needs_update = true;
+    }
+  }
   
   // Minute button
-  int minutePress = checkButtonPress(MINUTE_BUTTON, &minuteButton);
-  if (minutePress == 1) {  // Short press
+  int minutePlusPress = checkButtonPress(MINUTEPLUS_BUTTON, &minutePlusButton);
+  if (minutePlusPress == 1) {  // Short press
     if (display_mode == MODE_SET_CLOCK || display_mode == MODE_SET_ALARM) {
       incrementMinute();
+      display_needs_update = true;
+    }
+  }
+
+  int minuteMinusPress = checkButtonPress(MINUTEMINUS_BUTTON, &minuteMinusButton);
+  if (minuteMinusPress == 1) {  // Short press
+    if (display_mode == MODE_SET_CLOCK || display_mode == MODE_SET_ALARM) {
+      decrementMinute();
       display_needs_update = true;
     }
   }
@@ -368,7 +317,7 @@ void handleButtonEvents() {
 }
 
 void incrementHour() {
-  waitForRelease(HOUR_BUTTON, &hourButton);
+  waitForRelease(HOURPLUS_BUTTON, &hourPlusButton);
   if (display_mode == MODE_SET_CLOCK) {
     current_hour = (current_hour + 1) % 24;
     Serial.print("Current hour: ");
@@ -380,14 +329,40 @@ void incrementHour() {
   }
 }
 
+void decrementHour() {
+  waitForRelease(HOURPLUS_BUTTON, &hourMinusButton);
+  if (display_mode == MODE_SET_CLOCK) {
+    current_hour = (current_hour - 1) % 24;
+    Serial.print("Current hour: ");
+    Serial.println(current_hour);
+  } else if (display_mode == MODE_SET_ALARM) {
+    alarm_hour = (alarm_hour - 1) % 24;
+    Serial.print("Alarm hour: ");
+    Serial.println(alarm_hour);
+  }
+}
+
 void incrementMinute() {
-  waitForRelease(MINUTE_BUTTON, &minuteButton);
+  waitForRelease(MINUTEPLUS_BUTTON, &minutePlusButton);
   if (display_mode == MODE_SET_CLOCK) {
     current_minute = (current_minute + 1) % 60;
     Serial.print("Current minute: ");
     Serial.println(current_minute);
   } else if (display_mode == MODE_SET_ALARM) {
     alarm_minute = (alarm_minute + 1) % 60;
+    Serial.print("Alarm minute: ");
+    Serial.println(alarm_minute);
+  }
+}
+
+void decrementMinute() {
+  waitForRelease(MINUTEPLUS_BUTTON, &minuteMinusButton);
+  if (display_mode == MODE_SET_CLOCK) {
+    current_minute = (current_minute - 1) % 60;
+    Serial.print("Current minute: ");
+    Serial.println(current_minute);
+  } else if (display_mode == MODE_SET_ALARM) {
+    alarm_minute = (alarm_minute - 1) % 60;
     Serial.print("Alarm minute: ");
     Serial.println(alarm_minute);
   }
