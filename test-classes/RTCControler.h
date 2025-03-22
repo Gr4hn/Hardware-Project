@@ -20,9 +20,10 @@ public:
     int get_current_hour() const { return current_hour; }
     int get_current_minute() const { return current_minute; }
     int get_current_second() const { return current_second; }
-    void set_current_hour();
-    void set_current_minute();
-    void set_current_second();
+    unsigned long get_last_time_update() const { return lastTimeUpdate; }
+    void set_current_hour(int time_value);
+    void set_current_minute(int time_value);
+    void set_current_second(int time_value);
     void updateCurrentTimeFromRTC(Display& display);
 
 };
