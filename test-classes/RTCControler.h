@@ -24,6 +24,7 @@ public:
     void set_current_hour(int time_value);
     void set_current_minute(int time_value);
     void set_current_second(int time_value);
+    void set_last_time_update(unsigned long time_value);
     void updateCurrentTimeFromRTC(Display& display);
 
 };
@@ -85,6 +86,11 @@ void RTCControler::set_current_minute(int time_value)
 void RTCControler::set_current_second(int time_value)
 {
     current_second = time_value;
+}
+
+void RTCControler::set_last_time_update(unsigned long time_value)
+{
+    lastTimeUpdate = time_value;
 }
 
 
