@@ -3,34 +3,48 @@
 #include <TM1637Display.h>
 #include "./AlarmControler.h"
 #include "./RTCControler.h"
+#include "./Mode.h"
 
 class DisplayControler
 {
 private:
     TM1637 display;
     unsigned long last_display_update{ 0 };
-    int display_mode;
+    Mode display_mode;
+    RTCControler& rtc;
     bool colon_on{ true };
     bool display_needs_update{ true };
     bool showing_alarm_preview{ false };
     unsigned long alarm_preview_end_time{ 0 };
     unsigned long lastTimeUpdate{ 0 };
     const int DISPLAY_UPDATE_INTERVAL{ 500 }; // Display refresh rate (ms)
+    void handleSetNormalMode();
+    void handleSetClockMode();
+    void handleSetAlarmMode();
 public:
-    DisplayControler(int clk_pin, int dio_pin);
+    DisplayControler(int clk_pin, int dio_pin, RTCControler& rtc_ref);
     void init();
+    void set_mode(Mode mode);
     void updateDisplay();
+    void handleMode();
     void set_display_needs_update(bool update);
+
 };
 
 
-DisplayControler::DisplayControler(int clk_pin, int dio_pin) : display(clk, dio)
+DisplayControler::DisplayControler(int clk_pin, int dio_pin, RTCControler& rtc_ref) : display(clk, dio), rtc(rtc_ref), display_mode(Mode::NORMAL)
 {
 }
 
 void DisplayControler::init()
 {
     display.setBrightness(7);
+}
+
+void DisplayControler::set_mode(Mode mode)
+{
+    display_mode = mode;
+    updateDisplay();
 }
 
 void DisplayControler::updateDisplay() {
@@ -75,6 +89,37 @@ void DisplayControler::updateDisplay() {
 void DisplayControler::set_display_needs_update(bool update)
 {
     display_needs_update = update;
+}
+
+
+void DisplayControler::handleMode()
+{
+    switch (display_mode) {
+    case Mode::NORMAL:
+        handleSetNormalMode();
+        break;
+    case Mode::SET_CLOCK:
+        handleSetClockMode();
+        break;
+    case Mode::SET_ALARM:
+        handleSetAlarmMode();
+        break;
+    }
+}
+
+void DisplayControler::handleSetNormalMode()
+{
+    //
+}
+
+void DisplayControler::handleSetClockMode()
+{
+    //
+}
+
+void DisplayControler::handleSetAlarmMode()
+{
+    //
 }
 
 
