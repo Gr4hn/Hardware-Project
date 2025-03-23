@@ -13,19 +13,22 @@ private:
     int current_hour{ 0 }; // Start from 12:00
     int current_minute{ 0 };
     int current_second{ 0 };
+    RtcDateTime now;
     unsigned long lastTimeUpdate;
 public:
     RTCControler(int data_pin, int clk_pin, int rst_pin);
     void init();
-    int get_current_hour() const { return current_hour; }
-    int get_current_minute() const { return current_minute; }
-    int get_current_second() const { return current_second; }
+    int get_current_hour() const { return now.Hour(); }
+    int get_current_minute() const { return now.Minute(); }
+    int get_current_second() const { return now.Second(); }
     unsigned long get_last_time_update() const { return lastTimeUpdate; }
     void set_current_hour(int time_value);
     void set_current_minute(int time_value);
     void set_current_second(int time_value);
     void set_last_time_update(unsigned long time_value);
     void updateCurrentTimeFromRTC(Display& display);
+    void updateClock();
+    RtcDateTime getDateTime();
 
 };
 
@@ -48,7 +51,7 @@ void RTCControler::init()
 
 void RTCControler::updateCurrentTimeFromRTC(Display& display) {
     // Get current time from RTC once
-    RtcDateTime now = rtc.GetDateTime();
+    now = rtc.GetDateTime();
 
     // Store previous values to detect changes
     int prev_hour = current_hour;
@@ -75,6 +78,16 @@ void RTCControler::updateCurrentTimeFromRTC(Display& display) {
     }
 }
 
+void RTCControler::updateClock()
+{
+    if (millis() - lastTimeUpdate > 1000) {
+        now = rtc.GetDateTime();
+        updateCurrentTimeFromRTC();
+        lastTimeUpdate = millis();
+    }
+}
+
+
 void RTCControler::set_current_hour(int time_value)
 {
     current_hour = time_value;
@@ -91,6 +104,11 @@ void RTCControler::set_current_second(int time_value)
 void RTCControler::set_last_time_update(unsigned long time_value)
 {
     lastTimeUpdate = time_value;
+}
+
+RtcDateTime RTCControler::getDateTime()
+{
+    return now;
 }
 
 
