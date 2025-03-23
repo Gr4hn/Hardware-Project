@@ -13,7 +13,7 @@ We hope that your mornings will be more complete with our product!
 ## User manual
 [How to use the alarm clock](https://github.com/Gr4hn/Hardware-Project/wiki/How-to-use-the-alarm-clock) 
 
-## Functional requirments
+## Functional requirements
 [Reqirments](https://github.com/Gr4hn/Hardware-Project/wiki/Functional-requirements-Funktionella-krav)
 
 ## Components
