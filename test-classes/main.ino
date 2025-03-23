@@ -4,33 +4,33 @@
 #include "./AlarmControler.h"
 
 // Pin definitions
-const int CLK = 2;                // TM1637 Clock pin
-const int DIO = 3;                // TM1637 Data pin
-const int HOURPLUS_BUTTON = 4;
-const int MINUTEPLUS_BUTTON = 5;
-const int ALARM_BUTTON = 6;
-const int SNOOZE_BUTTON = 7;
-const int BUZZER_PIN = 8;         // Add a buzzer pin
-const int RST_PIN = 9;            // Add a reset pin
-const int DAT_PIN = 10;           // Add a data pin
-const int CLK_PIN = 11;           // Add a clock pin
-const int MINUTEMINUS_BUTTON = 13;
-const int HOURMINUS_BUTTON = 12;
+// const int CLK = 2;                // TM1637 Clock pin
+// const int DIO = 3;                // TM1637 Data pin
+// const int HOURPLUS_BUTTON = 4;
+// const int MINUTEPLUS_BUTTON = 5;
+// const int ALARM_BUTTON = 6;
+// const int SNOOZE_BUTTON = 7;
+// const int BUZZER_PIN = 8;         // Add a buzzer pin
+// const int RST_PIN = 9;            // Add a reset pin
+// const int DAT_PIN = 10;           // Add a data pin
+// const int CLK_PIN = 11;           // Add a clock pin
+// const int MINUTEMINUS_BUTTON = 13;
+// const int HOURMINUS_BUTTON = 12;
 
 // Time constants
-const int DEBOUNCE_DELAY = 50;    // Short debounce delay (ms)
-const int LONG_PRESS_TIME = 2000; // Long press detection time (ms)
-const int SNOOZE_TIME = 5;        // Snooze time in minutes
-const int ALARM_DURATION = 300000; // How long alarm sounds before auto-snooze (5 minutes)
-const int DISPLAY_UPDATE_INTERVAL = 500; // Display refresh rate (ms)
+// const int DEBOUNCE_DELAY = 50;    // Short debounce delay (ms)
+// const int LONG_PRESS_TIME = 2000; // Long press detection time (ms)
+// const int SNOOZE_TIME = 5;        // Snooze time in minutes
+// const int ALARM_DURATION = 300000; // How long alarm sounds before auto-snooze (5 minutes)
+// const int DISPLAY_UPDATE_INTERVAL = 500; // Display refresh rate (ms)
 
 // Display modes
-const int MODE_NORMAL = 0;
-const int MODE_SET_CLOCK = 1;
-const int MODE_SET_ALARM = 2;
+// const int MODE_NORMAL = 0;
+// const int MODE_SET_CLOCK = 1;
+// const int MODE_SET_ALARM = 2;
 
 // setup up all global objects
-RTCControler rtc(DAT_PIN, CLK_PIN, RST_PIN);
+RTCControler rtc(10, 11, 9); // dat_pin, clk_pin, rst_pin
 DisplayControler display(CLK, DIO);
 ButtonControler hour_plus_button(HOURPLUS_BUTTON);
 ButtonControler hour_minus_button(HOURMINUS_BUTTON);

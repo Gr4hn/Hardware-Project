@@ -15,6 +15,7 @@ private:
     bool showing_alarm_preview{ false };
     unsigned long alarm_preview_end_time{ 0 };
     unsigned long lastTimeUpdate{ 0 };
+    const int DISPLAY_UPDATE_INTERVAL{ 500 }; // Display refresh rate (ms)
 public:
     DisplayControler(int clk_pin, int dio_pin);
     void init();

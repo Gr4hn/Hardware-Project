@@ -9,6 +9,8 @@ private:
     bool lastState;     // Previous raw reading
     unsigned long pressTime;
     unsigned long lastDebounceTime;
+    const int DEBOUNCE_DELAY{ 50 };    // Short debounce delay (ms)
+    const int LONG_PRESS_TIME{ 2000 }; // Long press detection time (ms)
 public:
     ButtonControler(int button_pin);
 };

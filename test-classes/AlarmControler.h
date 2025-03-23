@@ -12,6 +12,9 @@ private:
     unsigned long alarm_trigger_time{ 0 };
     unsigned long alarm_preview_end_time{ 0 };
     bool showing_alarm_preview{ false };
+    const int ALARM_DURATION{ 300000 }; // How long alarm sounds before auto-snooze (5 minutes)
+    const int SNOOZE_TIME{ 5 };        // Snooze time in minutes
+
 
 public:
     AlarmControler(int pin);
