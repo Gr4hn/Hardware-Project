@@ -28,4 +28,6 @@ Projektet genomförs i 8 team med 4 - 5 personer i varje.
 
 En stark rekommendation är att upprätta ett gruppkontrakt
 
+- [User manual](https://github.com/Gr4hn/Hardware-Project/wiki/How-to-use-the-alarm-clock) 
+
 
