@@ -1,10 +1,11 @@
 #ifndef ALARM_CONTROLER_H
 #define ALARM_CONTROLER_H
 
+#include <RtcDs1302.h>
+
 class AlarmControler
 {
 private:
-    int buzzer_pin{ 0 };
     int alarm_hour{ 0 };     // Default alarm time
     int alarm_minute{ 0 };
     bool alarm_enabled;
@@ -17,7 +18,7 @@ private:
 
 
 public:
-    AlarmControler(int pin);
+    AlarmControler();
     void init();
     int get_current_alarm_hour() const { return alarm_hour; }
     int get_current_alarm_minute() const { return alarm_minute; }
@@ -28,13 +29,12 @@ public:
 
 };
 
-AlarmControler::AlarmControler(int pin) : buzzer_pin(pin), alarm_hour(7), alarm_minute(0), alarm_enabled(false), alarm_triggered(false), alarm_trigger_time(0), alarm_preview_end_time(0), showing_alarm_preview(false)
+AlarmControler::AlarmControler() : alarm_hour(7), alarm_minute(0), alarm_enabled(false), alarm_triggered(false), alarm_trigger_time(0), alarm_preview_end_time(0), showing_alarm_preview(false)
 {
 }
 
 void AlarmControler::init()
 {
-    pinMode(buzzer_pin, OUTPUT);
 }
 
 void AlarmControler::set_current_alarm_hour(int time_value)
