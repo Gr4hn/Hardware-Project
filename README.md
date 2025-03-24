@@ -6,6 +6,8 @@ Below you'll find our project pitch, user manual, components etc.
 
 We hope that your mornings will be more complete with our product!
 
+## Documentation
+[See Wiki page for more documentation](https://github.com/Gr4hn/Hardware-Project/wiki)(User manual, functional requirements, hardware components)
 
 ## Projektpitch
 [Our Idea](https://github.com/Gr4hn/Hardware-Project/wiki/Projekt-pitch)
