@@ -19,7 +19,7 @@ void setup() {
     rtc.init();
     display.init();
 
-    updateCurrentTimeFromRTC(display);
+    rtc.updateCurrentTimeFromRTC(display);
 
     display.set_display_needs_update(true);
 }
@@ -44,7 +44,15 @@ void loop() {
     display.handleMode();
 
     // Then check for button presses after we've handled the current mode
-    handleButtonEvents();
+    // moved handleButtonEvents() into the ButtonControler class
+    // the checkButtonPress calls the handleButtonPress
+    hour_plus_button.checkButtonPress();
+    minute_plus_button.checkButtonPress();
+    hour_minus_button.checkButtonPress();
+    minute_plus_button.checkButtonPress();
+    alarm_button.checkButtonPress();
+    snooze_button.checkButtonPress();
+
 
     // Finally, update the display
     display.updateDisplay();
